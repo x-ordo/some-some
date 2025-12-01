@@ -82,7 +82,9 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat(reverse: true);
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(seconds: 2))
+      ..repeat(reverse: true);
   }
 
   @override
@@ -104,7 +106,8 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
               // Toss Style Header
               FadeInUp(
                 delay: 0,
-                child: Text("너랑 나랑\n손끝 시그널", style: TDS.titleBig.copyWith(fontSize: 34)),
+                child: Text("너랑 나랑\n손끝 시그널",
+                    style: TDS.titleBig.copyWith(fontSize: 34)),
               ),
               const SizedBox(height: 12),
               FadeInUp(
@@ -123,17 +126,27 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
                       alignment: Alignment.center,
                       children: [
                         Transform.translate(
-                          offset: Offset(sin(_controller.value * 2 * pi) * 20, 0),
+                          offset:
+                              Offset(sin(_controller.value * 2 * pi) * 20, 0),
                           child: Container(
-                            width: 120, height: 120,
-                            decoration: BoxDecoration(color: TDS.primaryBlue.withOpacity(0.2), shape: BoxShape.circle, blurRadius: 20),
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                                color: TDS.primaryBlue.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                blurRadius: 20),
                           ),
                         ),
                         Transform.translate(
-                          offset: Offset(-sin(_controller.value * 2 * pi) * 20, 0),
+                          offset:
+                              Offset(-sin(_controller.value * 2 * pi) * 20, 0),
                           child: Container(
-                            width: 120, height: 120,
-                            decoration: BoxDecoration(color: TDS.kitschPink.withOpacity(0.2), shape: BoxShape.circle, blurRadius: 20),
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                                color: TDS.kitschPink.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                                blurRadius: 20),
                           ),
                         ),
                         const Text("💕", style: TextStyle(fontSize: 80)),
@@ -153,7 +166,10 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
                   color: TDS.primaryBlue,
                   onTap: () {
                     HapticFeedback.mediumImpact();
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const GameScreen()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const GameScreen()));
                   },
                 ),
               ),
@@ -161,7 +177,8 @@ class _IntroScreenState extends State<IntroScreen> with SingleTickerProviderStat
               FadeInUp(
                 delay: 500,
                 child: Center(
-                  child: Text("술자리 / 카페 / 썸 탈때 추천", style: TDS.body.copyWith(fontSize: 12)),
+                  child: Text("술자리 / 카페 / 썸 탈때 추천",
+                      style: TDS.body.copyWith(fontSize: 12)),
                 ),
               ),
               const SizedBox(height: 40),
@@ -304,7 +321,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     } else {
       // 실패 시 2번 퉁퉁
       HapticFeedback.heavyImpact();
-      Future.delayed(const Duration(milliseconds: 200), () => HapticFeedback.heavyImpact());
+      Future.delayed(const Duration(milliseconds: 200),
+          () => HapticFeedback.heavyImpact());
     }
   }
 
@@ -318,8 +336,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             child: Listener(
               onPointerDown: (e) {
                 setState(() => _pointers[e.pointer] = e.localPosition);
-                if (!isPlaying && !isGameOver && !isSuccess && _pointers.length >= 2) {
-                   _startGame();
+                if (!isPlaying &&
+                    !isGameOver &&
+                    !isSuccess &&
+                    _pointers.length >= 2) {
+                  _startGame();
                 }
               },
               onPointerMove: (e) {
@@ -357,12 +378,18 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       children: [
                         const Text("🐻", style: TextStyle(fontSize: 40)),
                         const SizedBox(height: 10),
-                        Text("각자 캐릭터를\n꾹 눌러주세요", textAlign: TextAlign.center, style: TDS.titleMedium.copyWith(color: TDS.kitschYellow)),
+                        Text("각자 캐릭터를\n꾹 눌러주세요",
+                            textAlign: TextAlign.center,
+                            style: TDS.titleMedium
+                                .copyWith(color: TDS.kitschYellow)),
                       ],
                     ),
                   ),
                 if (isPlaying)
-                  Text("${(progress * 100).toInt()}%", style: TDS.titleBig.copyWith(fontSize: 40, color: TDS.textWhite.withOpacity(0.5))),
+                  Text("${(progress * 100).toInt()}%",
+                      style: TDS.titleBig.copyWith(
+                          fontSize: 40,
+                          color: TDS.textWhite.withOpacity(0.5))),
               ],
             ),
           ),
@@ -386,7 +413,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               const Text("😱", style: TextStyle(fontSize: 80)),
               Text("띠로리~", style: TDS.titleBig.copyWith(color: TDS.danger)),
               const SizedBox(height: 10),
-              const Text("손을 놓쳐버렸어요!\n(벌칙: 서로 10초간 눈맞춤)", textAlign: TextAlign.center, style: TDS.body),
+              const Text("손을 놓쳐버렸어요!\n(벌칙: 서로 10초간 눈맞춤)",
+                  textAlign: TextAlign.center, style: TDS.body),
               const SizedBox(height: 30),
               TossButton(
                 text: "다시 도전",
@@ -416,7 +444,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
               const Text("🎉", style: TextStyle(fontSize: 80)),
               Text("천생연분!", style: TDS.titleBig.copyWith(color: TDS.kitschPink)),
               const SizedBox(height: 10),
-              const Text("이 정도면 사귀어야 하는 거 아님?", textAlign: TextAlign.center, style: TDS.body),
+              const Text("이 정도면 사귀어야 하는 거 아님?",
+                  textAlign: TextAlign.center, style: TDS.body),
               const SizedBox(height: 30),
               TossButton(
                 text: "다음 단계로",
@@ -478,7 +507,8 @@ class GamePainter extends CustomPainter {
       // Distance Text
       final dist = (p1 - p2).distance;
       if (dist < 100) {
-        _drawText(canvas, "어머! 닿겠어!", (p1 + p2) / 2 + const Offset(0, -40), TDS.kitschYellow, 14, true);
+        _drawText(canvas, "어머! 닿겠어!", (p1 + p2) / 2 + const Offset(0, -40),
+            TDS.kitschYellow, 14, true);
       }
     }
 
@@ -495,7 +525,8 @@ class GamePainter extends CustomPainter {
     });
   }
 
-  void _drawCharacter(Canvas canvas, Offset pos, String emoji, Color glowColor) {
+  void _drawCharacter(
+      Canvas canvas, Offset pos, String emoji, Color glowColor) {
     final paint = Paint();
     
     // Glow
@@ -511,20 +542,29 @@ class GamePainter extends CustomPainter {
     canvas.drawCircle(pos, 35, paint);
 
     // Emoji
-    final textSpan = TextSpan(text: emoji, style: const TextStyle(fontSize: 40));
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+    final textSpan =
+        TextSpan(text: emoji, style: const TextStyle(fontSize: 40));
+    final textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
-    textPainter.paint(canvas, pos - Offset(textPainter.width / 2, textPainter.height / 2));
+    textPainter.paint(
+        canvas, pos - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
-  void _drawText(Canvas canvas, String text, Offset pos, Color color, double fontSize, bool bold) {
+  void _drawText(Canvas canvas, String text, Offset pos, Color color,
+      double fontSize, bool bold) {
     final textSpan = TextSpan(
-      text: text, 
-      style: TextStyle(color: color, fontSize: fontSize, fontWeight: bold ? FontWeight.bold : FontWeight.normal, fontFamily: 'Pretendard')
-    );
-    final textPainter = TextPainter(text: textSpan, textDirection: TextDirection.ltr);
+        text: text,
+        style: TextStyle(
+            color: color,
+            fontSize: fontSize,
+            fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+            fontFamily: 'Pretendard'));
+    final textPainter =
+        TextPainter(text: textSpan, textDirection: TextDirection.ltr);
     textPainter.layout();
-    textPainter.paint(canvas, pos - Offset(textPainter.width / 2, textPainter.height / 2));
+    textPainter.paint(
+        canvas, pos - Offset(textPainter.width / 2, textPainter.height / 2));
   }
 
   @override
