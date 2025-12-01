@@ -341,7 +341,7 @@ cat pubspec.yaml
 
 ```yaml
 name: thumb_some
-description: 게임인 척하며 자연스럽게 손 잡기
+description: 게임인 척하며 자연스럽게 손잡기
 publish_to: 'none'
 version: 1.0.0+1
 

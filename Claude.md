@@ -3,7 +3,7 @@
 ## Project Overview
 
 **Project Name:** 썸썸 (Thumb Some) 👆💕👆
-**Tagline:** "게임인 척하며 자연스럽게 손 잡기"
+**Tagline:** "게임인 척하며 자연스럽게 손잡기"
 **Type:** Flutter-based Hyper-Casual Social Interactive App
 **Target Users:** 20-30대 남녀 (썸 초기 단계, 소개팅/술자리)
 

@@ -45,7 +45,7 @@ reviewers: [@lead-developer]
 ### 1.1 Project Identity
 
 **Project Name**: 썸썸 (Thumb Some)
-**Tagline**: "게임인 척하며 자연스럽게 손 잡기"
+**Tagline**: "게임인 척하며 자연스럽게 손잡기"
 **Version**: 1.0.0-MVP
 **Current Phase**: MVP Complete → Phase 2 Planning
 
