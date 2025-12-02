@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -9,17 +9,39 @@ void main() {
 }
 
 // -----------------------------------------------------------------------------
-// 1. DESIGN SYSTEM (Toss Style + Kitsch)
+// 1. DESIGN SYSTEM (Material Design 3 + Kitsch)
 // -----------------------------------------------------------------------------
+
+// M3 Seed Color - kitschPink generates the entire tonal palette
+const Color _seedColor = Color(0xFFFF007F); // kitschPink
+
+// Legacy TDS colors for backward compatibility during migration
+// TODO: Remove after full M3 migration
 class TDS {
-  static const Color background = Color(0xFF17171C); // 토스 다크 모드 배경
-  static const Color card = Color(0xFF202632); // 카드 배경
-  static const Color primaryBlue = Color(0xFF0064FF); // 토스 블루
-  static const Color kitschPink = Color(0xFFFF007F); // 썸썸 핑크
-  static const Color kitschYellow = Color(0xFFFFD700); // 썸썸 옐로우
-  static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textGrey = Color(0xFF8B95A1);
-  static const Color danger = Color(0xFFF04452); // 에러/실패
+  static const Color background = Color(
+    0xFF17171C,
+  ); // Legacy - use colorScheme.surface
+  static const Color card = Color(
+    0xFF202632,
+  ); // Legacy - use colorScheme.surfaceContainerHighest
+  static const Color primaryBlue = Color(
+    0xFF0064FF,
+  ); // Legacy - use colorScheme.secondary
+  static const Color kitschPink = Color(
+    0xFFFF007F,
+  ); // Legacy - use colorScheme.primary
+  static const Color kitschYellow = Color(
+    0xFFFFD700,
+  ); // Legacy - use colorScheme.tertiary
+  static const Color textWhite = Color(
+    0xFFFFFFFF,
+  ); // Legacy - use colorScheme.onSurface
+  static const Color textGrey = Color(
+    0xFF8B95A1,
+  ); // Legacy - use colorScheme.onSurfaceVariant
+  static const Color danger = Color(
+    0xFFF04452,
+  ); // Legacy - use colorScheme.error
 
   static const TextStyle titleBig = TextStyle(
     fontSize: 28,
@@ -41,7 +63,7 @@ class TDS {
     letterSpacing: -0.2,
   );
 
-  // 쫀득한 애니메이션 커브
+  // 쫀득한 애니메이션 커브 (게임 피드백용 - M3 하이브리드 모션)
   static const Curve spring = Curves.elasticOut;
 }
 
@@ -56,13 +78,20 @@ class ThumbSomeApp extends StatelessWidget {
     // 상태바 투명 처리 (몰입감 증대)
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
+    // M3 ColorScheme from seed color (Constitution v2.0)
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: _seedColor,
+      brightness: Brightness.dark,
+    );
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Thumb Some',
       theme: ThemeData(
-        scaffoldBackgroundColor: TDS.background,
-        fontFamily: 'Pretendard', // 있으면 좋고 없으면 시스템 폰트
         useMaterial3: true,
+        colorScheme: colorScheme,
+        scaffoldBackgroundColor: colorScheme.surface,
+        fontFamily: 'Pretendard', // 있으면 좋고 없으면 시스템 폰트
       ),
       home: const IntroScreen(),
     );
@@ -143,7 +172,6 @@ class _IntroScreenState extends State<IntroScreen>
                             decoration: BoxDecoration(
                               color: TDS.primaryBlue.withOpacity(0.2),
                               shape: BoxShape.circle,
-                              blurRadius: 20,
                             ),
                           ),
                         ),
@@ -158,7 +186,6 @@ class _IntroScreenState extends State<IntroScreen>
                             decoration: BoxDecoration(
                               color: TDS.kitschPink.withOpacity(0.2),
                               shape: BoxShape.circle,
-                              blurRadius: 20,
                             ),
                           ),
                         ),
@@ -171,7 +198,7 @@ class _IntroScreenState extends State<IntroScreen>
 
               const Spacer(),
 
-              // Toss Style Button
+              // Toss Style Button - 쫀드기 챌린지
               FadeInUp(
                 delay: 400,
                 child: TossButton(
@@ -186,9 +213,25 @@ class _IntroScreenState extends State<IntroScreen>
                   },
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 12),
+              // T001: 이심전심 텔레파시 버튼
               FadeInUp(
                 delay: 500,
+                child: TossButton(
+                  text: "이심전심 텔레파시",
+                  color: TDS.kitschPink,
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const SoulSyncScreen()),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              FadeInUp(
+                delay: 600,
                 child: Center(
                   child: Text(
                     "술자리 / 카페 / 썸 탈때 추천",
@@ -501,7 +544,392 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 }
 
 // -----------------------------------------------------------------------------
-// 5. PAINTER (High Performance Graphics)
+// 5. SOUL SYNC SCREEN (이심전심 텔레파시)
+// -----------------------------------------------------------------------------
+
+// Layout constants for Soul Sync (spec traceability)
+class _SoulSyncLayout {
+  static const double buttonSize = 80.0; // LR-002
+  static const double buttonSpacing = 40.0; // LR-003
+  static const double dividerHeight = 2.0; // LR-005
+}
+
+// T004: 하드코딩된 질문 리스트
+const List<String> _soulSyncQuestions = [
+  "첫 데이트는 활동적인 게 좋다",
+  "연인 사이에 비밀은 없어야 한다",
+  "기념일은 꼭 챙겨야 한다",
+  "싸우면 먼저 연락해야 한다",
+  "서로의 핸드폰을 볼 수 있어야 한다",
+  "데이트 비용은 번갈아 내야 한다",
+  "같은 취미가 있어야 한다",
+  "자기 전에 통화해야 한다",
+  "친구들에게 연애 사실을 알려야 한다",
+  "여행은 둘이만 가야 한다",
+];
+
+class SoulSyncScreen extends StatefulWidget {
+  const SoulSyncScreen({super.key});
+
+  @override
+  State<SoulSyncScreen> createState() => _SoulSyncScreenState();
+}
+
+class _SoulSyncScreenState extends State<SoulSyncScreen> {
+  // T007: State variables
+  late List<String> _questions;
+  int _currentIndex = 0;
+  Map<String, bool?> _currentAnswers = {'A': null, 'B': null};
+  List<Map<String, bool>> _completedAnswers = [];
+  bool _showResult = false;
+
+  // T024: Optional nudge timer
+  Timer? _nudgeTimer;
+
+  // T013: Match calculation
+  int get _matches => _completedAnswers.where((r) => r['A'] == r['B']).length;
+
+  int get _percent => _completedAnswers.isEmpty
+      ? 0
+      : (_matches / _completedAnswers.length * 100).round();
+
+  // T008: initState with question shuffle
+  @override
+  void initState() {
+    super.initState();
+    _initGame();
+  }
+
+  @override
+  void dispose() {
+    _nudgeTimer?.cancel();
+    super.dispose();
+  }
+
+  void _initGame() {
+    _nudgeTimer?.cancel();
+    // C1: Validate question pool has sufficient questions
+    assert(
+      _soulSyncQuestions.length >= 5,
+      'Question pool must have at least 5 questions',
+    );
+    final shuffled = List<String>.from(_soulSyncQuestions)..shuffle();
+    _questions = shuffled.take(5).toList();
+    _currentIndex = 0;
+    _currentAnswers = {'A': null, 'B': null};
+    _completedAnswers = [];
+    _showResult = false;
+  }
+
+  // T024: Start nudge timer when one player answers
+  void _startNudgeTimer() {
+    _nudgeTimer?.cancel();
+    _nudgeTimer = Timer(const Duration(seconds: 10), () {
+      // Only nudge if still waiting for other player
+      if (_currentAnswers['A'] != null && _currentAnswers['B'] == null ||
+          _currentAnswers['A'] == null && _currentAnswers['B'] != null) {
+        HapticFeedback.lightImpact();
+      }
+    });
+  }
+
+  // T010 & T011: Answer handling with auto-advance
+  void _onAnswer(String playerId, bool isO) {
+    setState(() {
+      _currentAnswers[playerId] = isO;
+
+      // T011: Check if both players answered
+      if (_currentAnswers['A'] != null && _currentAnswers['B'] != null) {
+        // Cancel nudge timer since both answered
+        _nudgeTimer?.cancel();
+
+        // Save this round's answers
+        _completedAnswers.add({
+          'A': _currentAnswers['A']!,
+          'B': _currentAnswers['B']!,
+        });
+
+        // Check if game is complete
+        if (_completedAnswers.length >= 5) {
+          _showResult = true;
+        } else {
+          // Move to next question
+          _currentIndex++;
+          _currentAnswers = {'A': null, 'B': null};
+        }
+      } else {
+        // T024: One player answered, start nudge timer
+        _startNudgeTimer();
+      }
+    });
+  }
+
+  // T009: Split-screen layout build method
+  @override
+  Widget build(BuildContext context) {
+    // T014: Show result when complete
+    if (_showResult) {
+      return _buildResultScreen();
+    }
+
+    final currentQuestion = _questions[_currentIndex];
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Top player area (rotated 180°)
+            Expanded(
+              child: Transform.rotate(
+                angle: pi, // 180 degrees
+                child: _PlayerArea(
+                  playerId: 'A',
+                  question: currentQuestion,
+                  answered: _currentAnswers['A'],
+                  isWaiting: _currentAnswers['A'] != null,
+                  onAnswer: (isO) => _onAnswer('A', isO),
+                ),
+              ),
+            ),
+            // Divider (LR-005)
+            Container(
+              height: _SoulSyncLayout.dividerHeight,
+              color: TDS.textGrey.withOpacity(0.3),
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+            ),
+            // Progress indicator
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text(
+                "${_currentIndex + 1} / 5",
+                style: TDS.body.copyWith(color: TDS.textGrey),
+              ),
+            ),
+            // Bottom player area (normal orientation)
+            Expanded(
+              child: _PlayerArea(
+                playerId: 'B',
+                question: currentQuestion,
+                answered: _currentAnswers['B'],
+                isWaiting: _currentAnswers['B'] != null,
+                onAnswer: (isO) => _onAnswer('B', isO),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // T015: Result message getter with 3-tier logic
+  String get _resultMessage {
+    if (_percent >= 80) return "천생연분!";
+    if (_percent >= 50) return "꽤 맞네?";
+    return "이건 좀...";
+  }
+
+  // T020: Result emoji based on tier
+  String get _resultEmoji {
+    if (_percent >= 80) return "🎉";
+    if (_percent >= 50) return "😊";
+    return "😅";
+  }
+
+  // T017: Tiered haptic feedback
+  void _triggerResultHaptic() {
+    if (_percent >= 80) {
+      HapticFeedback.vibrate(); // 축하!
+    } else if (_percent >= 50) {
+      HapticFeedback.mediumImpact();
+    } else {
+      HapticFeedback.lightImpact();
+    }
+  }
+
+  // T018: Reset game with new shuffled questions
+  void _restartGame() {
+    setState(() {
+      _initGame();
+    });
+    HapticFeedback.mediumImpact();
+  }
+
+  // T019: Navigate back to IntroScreen
+  void _goHome() {
+    HapticFeedback.mediumImpact();
+    Navigator.of(context).pop();
+  }
+
+  // T014 + T016: Polished result screen with FadeInUp
+  Widget _buildResultScreen() {
+    // T017: Trigger haptic on first build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _triggerResultHaptic();
+    });
+
+    return Scaffold(
+      body: Container(
+        color: TDS.background,
+        child: SafeArea(
+          child: Center(
+            child: FadeInUp(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // T020: Emoji
+                    Text(_resultEmoji, style: const TextStyle(fontSize: 80)),
+                    const SizedBox(height: 16),
+                    // T015: Result message
+                    Text(
+                      _resultMessage,
+                      style: TDS.titleBig.copyWith(
+                        fontSize: 36,
+                        color: _percent >= 80
+                            ? TDS.kitschPink
+                            : _percent >= 50
+                            ? TDS.kitschYellow
+                            : TDS.textGrey,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Match count
+                    Text("$_matches / 5 일치 ($_percent%)", style: TDS.body),
+                    const SizedBox(height: 40),
+                    // T018: 다시하기 버튼
+                    TossButton(
+                      text: "다시하기",
+                      color: TDS.kitschPink,
+                      onTap: _restartGame,
+                    ),
+                    const SizedBox(height: 12),
+                    // T019: 홈으로 버튼
+                    TossButton(
+                      text: "홈으로",
+                      color: TDS.textGrey,
+                      onTap: _goHome,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// T006: 플레이어 영역 위젯
+class _PlayerArea extends StatelessWidget {
+  final String playerId;
+  final String question;
+  final bool? answered; // null = not answered, true = O, false = X
+  final bool isWaiting;
+  final void Function(bool isO) onAnswer;
+
+  const _PlayerArea({
+    required this.playerId,
+    required this.question,
+    required this.answered,
+    required this.isWaiting,
+    required this.onAnswer,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // 질문 텍스트
+          Text(
+            question,
+            textAlign: TextAlign.center,
+            style: TDS.titleMedium.copyWith(fontSize: 18),
+          ),
+          const SizedBox(height: 24),
+          // 대기 중이면 대기 메시지 표시
+          if (isWaiting)
+            Text("기다리는 중~", style: TDS.body.copyWith(color: TDS.kitschYellow))
+          else
+            // O/X 버튼
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildOXButton(
+                  isO: true,
+                  disabled: answered != null,
+                  onTap: () => onAnswer(true),
+                ),
+                const SizedBox(width: _SoulSyncLayout.buttonSpacing),
+                _buildOXButton(
+                  isO: false,
+                  disabled: answered != null,
+                  onTap: () => onAnswer(false),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOXButton({
+    required bool isO,
+    required VoidCallback onTap,
+    bool disabled = false,
+  }) {
+    final color = isO ? TDS.primaryBlue : TDS.kitschPink;
+    // C5: Semantics wrapper for future accessibility (AR-006)
+    return Semantics(
+      label: isO ? '동의 버튼' : '비동의 버튼',
+      button: true,
+      enabled: !disabled,
+      child: GestureDetector(
+        onTap: disabled
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                onTap();
+              },
+        child: Opacity(
+          opacity: disabled ? 0.4 : 1.0,
+          child: Container(
+            width: _SoulSyncLayout.buttonSize,
+            height: _SoulSyncLayout.buttonSize,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: color.withOpacity(0.4),
+                  blurRadius: 15,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Center(
+              child: Text(
+                isO ? "O" : "X",
+                style: const TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// -----------------------------------------------------------------------------
+// 6. PAINTER (High Performance Graphics)
 // -----------------------------------------------------------------------------
 class GamePainter extends CustomPainter {
   final Map<int, Offset> pointers;
@@ -521,7 +949,6 @@ class GamePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     // 1. Draw Connection Line between Pointers (Red Thread of Fate)
     if (pointers.length >= 2) {
@@ -723,7 +1150,10 @@ class _FadeInUpState extends State<FadeInUp>
       animation: _controller,
       builder: (context, child) => Transform.translate(
         offset: _translate.value,
-        child: Opacity(opacity: _opacity.value, child: widget.child),
+        child: Opacity(
+          opacity: _opacity.value.clamp(0.0, 1.0),
+          child: widget.child,
+        ),
       ),
     );
   }
