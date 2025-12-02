@@ -321,3 +321,10 @@ flutter build ios --release      # iOS build
 **Last Updated:** 2025-12-01
 **Document Version:** 1.0
 **Project Phase:** MVP Complete
+
+## Active Technologies
+- Dart 3.x / Flutter 3.x + Flutter SDK only (no external packages per Constitution) (001-soul-sync)
+- N/A (in-memory game state, hardcoded question list for MVP) (001-soul-sync)
+
+## Recent Changes
+- 001-soul-sync: Added Dart 3.x / Flutter 3.x + Flutter SDK only (no external packages per Constitution)
