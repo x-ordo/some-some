@@ -18,14 +18,30 @@ const Color _seedColor = Color(0xFFFF007F); // kitschPink
 // Legacy TDS colors for backward compatibility during migration
 // TODO: Remove after full M3 migration
 class TDS {
-  static const Color background = Color(0xFF17171C); // Legacy - use colorScheme.surface
-  static const Color card = Color(0xFF202632); // Legacy - use colorScheme.surfaceContainerHighest
-  static const Color primaryBlue = Color(0xFF0064FF); // Legacy - use colorScheme.secondary
-  static const Color kitschPink = Color(0xFFFF007F); // Legacy - use colorScheme.primary
-  static const Color kitschYellow = Color(0xFFFFD700); // Legacy - use colorScheme.tertiary
-  static const Color textWhite = Color(0xFFFFFFFF); // Legacy - use colorScheme.onSurface
-  static const Color textGrey = Color(0xFF8B95A1); // Legacy - use colorScheme.onSurfaceVariant
-  static const Color danger = Color(0xFFF04452); // Legacy - use colorScheme.error
+  static const Color background = Color(
+    0xFF17171C,
+  ); // Legacy - use colorScheme.surface
+  static const Color card = Color(
+    0xFF202632,
+  ); // Legacy - use colorScheme.surfaceContainerHighest
+  static const Color primaryBlue = Color(
+    0xFF0064FF,
+  ); // Legacy - use colorScheme.secondary
+  static const Color kitschPink = Color(
+    0xFFFF007F,
+  ); // Legacy - use colorScheme.primary
+  static const Color kitschYellow = Color(
+    0xFFFFD700,
+  ); // Legacy - use colorScheme.tertiary
+  static const Color textWhite = Color(
+    0xFFFFFFFF,
+  ); // Legacy - use colorScheme.onSurface
+  static const Color textGrey = Color(
+    0xFF8B95A1,
+  ); // Legacy - use colorScheme.onSurfaceVariant
+  static const Color danger = Color(
+    0xFFF04452,
+  ); // Legacy - use colorScheme.error
 
   static const TextStyle titleBig = TextStyle(
     fontSize: 28,
@@ -573,8 +589,7 @@ class _SoulSyncScreenState extends State<SoulSyncScreen> {
   Timer? _nudgeTimer;
 
   // T013: Match calculation
-  int get _matches =>
-      _completedAnswers.where((r) => r['A'] == r['B']).length;
+  int get _matches => _completedAnswers.where((r) => r['A'] == r['B']).length;
 
   int get _percent => _completedAnswers.isEmpty
       ? 0
@@ -598,8 +613,10 @@ class _SoulSyncScreenState extends State<SoulSyncScreen> {
   void _initGame() {
     _nudgeTimer?.cancel();
     // C1: Validate question pool has sufficient questions
-    assert(_soulSyncQuestions.length >= 5,
-        'Question pool must have at least 5 questions');
+    assert(
+      _soulSyncQuestions.length >= 5,
+      'Question pool must have at least 5 questions',
+    );
     final shuffled = List<String>.from(_soulSyncQuestions)..shuffle();
     _questions = shuffled.take(5).toList();
     _currentIndex = 0;
@@ -766,10 +783,7 @@ class _SoulSyncScreenState extends State<SoulSyncScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // T020: Emoji
-                    Text(
-                      _resultEmoji,
-                      style: const TextStyle(fontSize: 80),
-                    ),
+                    Text(_resultEmoji, style: const TextStyle(fontSize: 80)),
                     const SizedBox(height: 16),
                     // T015: Result message
                     Text(
@@ -779,16 +793,13 @@ class _SoulSyncScreenState extends State<SoulSyncScreen> {
                         color: _percent >= 80
                             ? TDS.kitschPink
                             : _percent >= 50
-                                ? TDS.kitschYellow
-                                : TDS.textGrey,
+                            ? TDS.kitschYellow
+                            : TDS.textGrey,
                       ),
                     ),
                     const SizedBox(height: 16),
                     // Match count
-                    Text(
-                      "$_matches / 5 일치 ($_percent%)",
-                      style: TDS.body,
-                    ),
+                    Text("$_matches / 5 일치 ($_percent%)", style: TDS.body),
                     const SizedBox(height: 40),
                     // T018: 다시하기 버튼
                     TossButton(
@@ -846,10 +857,7 @@ class _PlayerArea extends StatelessWidget {
           const SizedBox(height: 24),
           // 대기 중이면 대기 메시지 표시
           if (isWaiting)
-            Text(
-              "기다리는 중~",
-              style: TDS.body.copyWith(color: TDS.kitschYellow),
-            )
+            Text("기다리는 중~", style: TDS.body.copyWith(color: TDS.kitschYellow))
           else
             // O/X 버튼
             Row(
