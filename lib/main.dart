@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 void main() {
@@ -172,7 +173,6 @@ class _IntroScreenState extends State<IntroScreen>
                             decoration: BoxDecoration(
                               color: TDS.primaryBlue.withOpacity(0.2),
                               shape: BoxShape.circle,
-                              blurRadius: 20,
                             ),
                           ),
                         ),
@@ -187,7 +187,6 @@ class _IntroScreenState extends State<IntroScreen>
                             decoration: BoxDecoration(
                               color: TDS.kitschPink.withOpacity(0.2),
                               shape: BoxShape.circle,
-                              blurRadius: 20,
                             ),
                           ),
                         ),
@@ -595,8 +594,6 @@ class _SoulSyncScreenState extends State<SoulSyncScreen> {
       ? 0
       : (_matches / _completedAnswers.length * 100).round();
 
-  bool get _isComplete => _completedAnswers.length >= 5;
-
   // T008: initState with question shuffle
   @override
   void initState() {
@@ -953,7 +950,6 @@ class GamePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()..style = PaintingStyle.fill;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
 
     // 1. Draw Connection Line between Pointers (Red Thread of Fate)
     if (pointers.length >= 2) {

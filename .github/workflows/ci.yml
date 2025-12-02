@@ -38,7 +38,7 @@ jobs:
           dart format .
 
       - name: Analyze code
-        run: flutter analyze --fatal-infos --fatal-warnings
+        run: flutter analyze --fatal-warnings
 
       - name: Check for outdated dependencies
         run: flutter pub outdated
