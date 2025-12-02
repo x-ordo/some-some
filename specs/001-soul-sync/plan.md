@@ -5,7 +5,7 @@
 
 ## Summary
 
-Soul Sync is a two-player compatibility quiz where users answer O/X questions on a split-screen interface (each half rotated 180° for face-to-face play). After 5 questions, the app reveals how many answers matched and displays a playful compatibility result. The implementation adds a new screen (`SoulSyncScreen`) to the existing single-file Flutter architecture, reusing TDS design system, `TossButton`, `FadeInUp`, and haptic patterns.
+Soul Sync is a two-player compatibility quiz where users answer O/X questions on a split-screen interface (each half rotated 180° for face-to-face play). After 5 questions, the app reveals how many answers matched and displays a playful compatibility result. The implementation adds a new screen (`SoulSyncScreen`) to the existing single-file Flutter architecture, using Material Design 3 (M3) with kitschPink seed color, `FilledButton`, `FadeInUp`, and haptic patterns.
 
 ## Technical Context
 
@@ -27,7 +27,7 @@ Soul Sync is a two-player compatibility quiz where users answer O/X questions on
 |-----------|--------|-------|
 | I. Simplicity First | ✅ PASS | Adding to existing main.dart, no new files, no abstractions |
 | II. Performance Non-Negotiable | ✅ PASS | No game loop needed (turn-based Q&A), standard widget rendering |
-| III. Design System Compliance (TDS) | ✅ PASS | Reusing TDS colors, TossButton, FadeInUp |
+| III. Design System Compliance (M3) | ✅ PASS | Using M3 ColorScheme.fromSeed(kitschPink), FilledButton, FadeInUp |
 | IV. Physics Stability | ✅ N/A | No physics in Soul Sync (quiz-based, not movement-based) |
 | V. Brand Voice Authenticity | ✅ PASS | Using 반말, playful phrases like "천생연분!", "꽤 맞네?" |
 
@@ -60,13 +60,13 @@ specs/001-soul-sync/
 ```text
 lib/
 └── main.dart            # Single file containing all code
-    ├── TDS              # Design system (existing)
+    ├── ThemeData        # M3 ColorScheme.fromSeed (existing)
     ├── ThumbSomeApp     # Main app (existing)
     ├── IntroScreen      # Lobby - add Soul Sync button (modify)
     ├── GameScreen       # Sticky Fingers game (existing)
     ├── SoulSyncScreen   # NEW: Soul Sync quiz game
     ├── GamePainter      # Sticky Fingers painter (existing)
-    ├── TossButton       # Reusable button (existing)
+    ├── FilledButton     # M3 button widget (Flutter built-in)
     └── FadeInUp         # Animation widget (existing)
 ```
 
