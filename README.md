@@ -205,9 +205,16 @@ targetB = Offset(
 
 ---
 
-## License
+## Copyright
 
-MIT License
+Copyright (c) 2025 Prometheus-P. All rights reserved.
+
+이 소프트웨어와 관련 문서 파일("소프트웨어")에 대한 모든 권리는 저작권자에게 있습니다.
+소프트웨어의 복제, 수정, 배포, 상업적 이용은 저작권자의 사전 서면 동의 없이 금지됩니다.
+
+This software and associated documentation files ("Software") are proprietary.
+Copying, modification, distribution, or commercial use of this Software
+is prohibited without prior written consent from the copyright holder.
 
 ---
 

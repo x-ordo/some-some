@@ -1,0 +1,8 @@
+# Android release signing (example)
+# 1) Create keystore:
+#    keytool -genkeypair -v -storetype JKS -keystore some_some_release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias some_some
+# 2) Copy this file to android/key.properties and fill values:
+storeFile=some_some_release.jks
+storePassword=CHANGE_ME
+keyAlias=some_some
+keyPassword=CHANGE_ME
