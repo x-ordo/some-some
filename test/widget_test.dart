@@ -7,7 +7,7 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:thumb_some/main.dart';
+import 'package:some_some/app/app.dart';
 
 void main() {
   test('App smoke test', () {

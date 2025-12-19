@@ -1,38 +1,51 @@
-name: thumb_some
+name: some_some
 description: "썸썸 - 게임인 척하며 자연스럽게 손잡기"
-publish_to: 'none' # 퍼블리싱 하지 않음
+publish_to: 'none'
 
-version: 0.2.0+2
+version: 0.3.0+3
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: ">=3.3.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # MVP uses Material Design only
-  # cupertino_icons will be added in Phase 2+ if needed
+  # Sharing & capture
+  share_plus: ^10.0.0
+  path_provider: ^2.1.4
+
+  # Settings / packs
+  shared_preferences: ^2.3.2
+  http: ^1.2.2
+
+  # Links & optional QR
+  url_launcher: ^6.3.0
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_lints: ^4.0.0
 
-  # 코드 품질 도구
-  flutter_lints: ^3.0.0
+  # (optional) icon/splash generation
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
 
-  # Assets 설정 (Phase 2+)
-  # assets:
-  #   - assets/images/
-  #   - assets/fonts/
+  assets:
+    - assets/packs/default.json
 
-  # 폰트 설정 (Phase 2+)
-  # fonts:
-  #   - family: Pretendard
-  #     fonts:
-  #       - asset: assets/fonts/Pretendard-Regular.ttf
-  #       - asset: assets/fonts/Pretendard-Bold.ttf
-  #         weight: 700
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/branding/icon.png"
+
+flutter_native_splash:
+  color: "#17171C"
+  image: assets/branding/splash.png
+  android_12:
+    color: "#17171C"
+    image: assets/branding/splash.png
