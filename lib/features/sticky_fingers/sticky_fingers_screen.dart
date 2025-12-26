@@ -35,6 +35,10 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
   // Grace period timer for accidental lifts
   Timer? _graceTimer;
   static const Duration _graceDuration = Duration(milliseconds: 200);
+  final ValueNotifier<bool> _isGracePeriod = ValueNotifier<bool>(false);
+
+  // Failure reason tracking
+  String? _failureReason;
 
   static const String _storeText = '@somesome.app';
 
@@ -47,7 +51,7 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
 
   // Tunables
   static const double _durationSec = 15.0;
-  static const double _targetRadius = 34.0;
+  static const double _targetRadius = 55.0; // v1.0.1: 34→55px for better touch tolerance
   static const double _moveSpeed = 1.0; // scales the curve speed
 
   @override
@@ -64,6 +68,7 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _ticker.dispose();
     _progress.dispose();
     _phase.dispose();
+    _isGracePeriod.dispose();
     super.dispose();
   }
 
@@ -72,14 +77,20 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _time = 0.0;
     _progress.value = 0.0;
     _phase.value = StickyGamePhase.playing;
+    _failureReason = null;
+    _isGracePeriod.value = false;
     _ticker.start();
     Haptics.heavy();
   }
 
-  void _stop({required bool success}) {
+  void _stop({required bool success, String? reason}) {
     _graceTimer?.cancel();
+    _isGracePeriod.value = false;
     _ticker.stop();
     _phase.value = success ? StickyGamePhase.success : StickyGamePhase.fail;
+    if (!success && reason != null) {
+      _failureReason = reason;
+    }
     if (success) {
       Haptics.vibrate();
     } else {
@@ -93,6 +104,8 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _time = 0.0;
     _progress.value = 0.0;
     _phase.value = StickyGamePhase.idle;
+    _failureReason = null;
+    _isGracePeriod.value = false;
     setState(() {});
   }
 
@@ -179,11 +192,20 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
             const SizedBox(height: 8),
             ValueListenableBuilder<double>(
               valueListenable: _progress,
-              builder: (context, v, _) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(999),
-                  child: LinearProgressIndicator(value: v),
+              builder: (context, v, _) => ValueListenableBuilder<bool>(
+                valueListenable: _isGracePeriod,
+                builder: (context, isGrace, _) => Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: v,
+                      backgroundColor: isGrace
+                          ? Colors.amber.withOpacity(0.3)
+                          : null,
+                      color: isGrace ? Colors.amber : null,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -200,6 +222,7 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
                         // Cancel any pending grace timer (finger returned)
                         _graceTimer?.cancel();
                         _graceTimer = null;
+                        _isGracePeriod.value = false;
 
                         _pointers[e.pointer] = e.localPosition;
                         if (_phase.value == StickyGamePhase.idle &&
@@ -212,28 +235,49 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
                         _pointers[e.pointer] = e.localPosition;
                       },
                       onPointerUp: (e) {
+                        final liftedPos = _pointers[e.pointer];
                         _pointers.remove(e.pointer);
                         if (_phase.value == StickyGamePhase.playing) {
+                          // Determine which side lifted (for failure reason)
+                          String liftReason = '손가락이 떨어졌어요';
+                          if (liftedPos != null) {
+                            final screenWidth = MediaQuery.of(context).size.width;
+                            liftReason = liftedPos.dx < screenWidth / 2
+                                ? '왼쪽 손가락이 떨어졌어요'
+                                : '오른쪽 손가락이 떨어졌어요';
+                          }
+
                           // Start grace period instead of immediate fail
                           _graceTimer?.cancel();
+                          _isGracePeriod.value = true;
                           _graceTimer = Timer(_graceDuration, () {
                             if (_pointers.length < 2 &&
                                 _phase.value == StickyGamePhase.playing) {
-                              _stop(success: false);
+                              _stop(success: false, reason: liftReason);
                             }
                           });
                         }
                         setState(() {});
                       },
                       onPointerCancel: (e) {
+                        final liftedPos = _pointers[e.pointer];
                         _pointers.remove(e.pointer);
                         if (_phase.value == StickyGamePhase.playing) {
+                          String liftReason = '손가락이 떨어졌어요';
+                          if (liftedPos != null) {
+                            final screenWidth = MediaQuery.of(context).size.width;
+                            liftReason = liftedPos.dx < screenWidth / 2
+                                ? '왼쪽 손가락이 떨어졌어요'
+                                : '오른쪽 손가락이 떨어졌어요';
+                          }
+
                           // Start grace period for cancel events too
                           _graceTimer?.cancel();
+                          _isGracePeriod.value = true;
                           _graceTimer = Timer(_graceDuration, () {
                             if (_pointers.length < 2 &&
                                 _phase.value == StickyGamePhase.playing) {
-                              _stop(success: false);
+                              _stop(success: false, reason: liftReason);
                             }
                           });
                         }
@@ -304,6 +348,14 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
                           style: titleBig(cs),
                         ),
                         const SizedBox(height: 6),
+                        if (!success && _failureReason != null)
+                          Text(
+                            _failureReason!,
+                            style: bodySmall(cs).copyWith(color: Colors.amber),
+                            textAlign: TextAlign.center,
+                          ),
+                        if (!success && _failureReason != null)
+                          const SizedBox(height: 4),
                         if (line.isNotEmpty)
                           Text(line, style: bodyBig(cs), textAlign: TextAlign.center),
                         const SizedBox(height: 12),
