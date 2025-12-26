@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import '../../core/haptics/haptics.dart';
+import '../../core/sound/sound_service.dart';
 import '../../design_system/tds.dart';
 
 enum StickyGamePhase { idle, playing, success, fail }
@@ -40,6 +42,10 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
   // Failure reason tracking
   String? _failureReason;
 
+  // Sound & Celebration
+  final SoundService _sound = SoundService();
+  late final ConfettiController _confettiController;
+
   static const String _storeText = '@somesome.app';
 
   // Hardcoded result messages (v1.0.0 MVP)
@@ -60,6 +66,8 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _targetA = const Offset(120, 260);
     _targetB = const Offset(240, 260);
     _ticker = createTicker(_gameLoop);
+    _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    _sound.init();
   }
 
   @override
@@ -69,6 +77,8 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _progress.dispose();
     _phase.dispose();
     _isGracePeriod.dispose();
+    _confettiController.dispose();
+    _sound.stopHeartbeat();
     super.dispose();
   }
 
@@ -81,20 +91,26 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _isGracePeriod.value = false;
     _ticker.start();
     Haptics.heavy();
+    _sound.playStart();
+    _sound.startHeartbeat();
   }
 
   void _stop({required bool success, String? reason}) {
     _graceTimer?.cancel();
     _isGracePeriod.value = false;
     _ticker.stop();
+    _sound.stopHeartbeat();
     _phase.value = success ? StickyGamePhase.success : StickyGamePhase.fail;
     if (!success && reason != null) {
       _failureReason = reason;
     }
     if (success) {
       Haptics.vibrate();
+      _sound.playSuccess();
+      _confettiController.play();
     } else {
       Haptics.heavy();
+      _sound.playFail();
     }
   }
 
@@ -146,6 +162,7 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
       if (ok) {
         final next = (_progress.value + dt / _durationSec).clamp(0.0, 1.0);
         _progress.value = next;
+        _sound.setHeartbeatSpeed(next); // 진행률에 따라 심장박동 속도 증가
         if (next >= 1.0) {
           _stop(success: true);
         }
@@ -186,7 +203,9 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
         title: const Text('쫀드기 챌린지'),
         backgroundColor: Colors.transparent,
       ),
-      body: SafeArea(
+      body: Stack(
+        children: [
+          SafeArea(
         child: Column(
           children: [
             const SizedBox(height: 8),
@@ -395,6 +414,27 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
             ),
           ],
         ),
+          ),
+          // Confetti celebration overlay
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: [
+                cs.primary,
+                cs.secondary,
+                cs.tertiary,
+                Colors.amber,
+                Colors.white,
+              ],
+              emissionFrequency: 0.05,
+              numberOfParticles: 30,
+              gravity: 0.2,
+            ),
+          ),
+        ],
       ),
     );
   }

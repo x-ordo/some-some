@@ -2,11 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../design_system/tds.dart';
 import '../../design_system/components/toss_button.dart';
 import '../../design_system/motion/fade_in_up.dart';
 import '../sticky_fingers/sticky_fingers_screen.dart';
+import '../tutorial/tutorial_screen.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -18,6 +20,7 @@ class IntroScreen extends StatefulWidget {
 class _IntroScreenState extends State<IntroScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  static const String _tutorialSeenKey = 'tutorial_seen';
 
   @override
   void initState() {
@@ -26,6 +29,30 @@ class _IntroScreenState extends State<IntroScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat(reverse: true);
+    _checkFirstLaunch();
+  }
+
+  Future<void> _checkFirstLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool(_tutorialSeenKey) ?? false;
+    if (!seen && mounted) {
+      _showTutorial();
+    }
+  }
+
+  void _showTutorial() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TutorialScreen(
+          onComplete: () async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool(_tutorialSeenKey, true);
+            if (mounted) Navigator.pop(context);
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -45,7 +72,16 @@ class _IntroScreenState extends State<IntroScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 60),
+              // Help button (shows tutorial again)
+              Align(
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  onPressed: _showTutorial,
+                  icon: Icon(Icons.help_outline, color: cs.onSurfaceVariant),
+                  tooltip: '도움말',
+                ),
+              ),
+              const SizedBox(height: 20),
               // M3 Style Header
               FadeInUp(
                 delay: 0,
