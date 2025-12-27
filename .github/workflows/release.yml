@@ -148,57 +148,34 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  notify:
-    name: Notify Release
-    runs-on: ubuntu-latest
-    needs: create-release
-    if: always()
-
-    steps:
-      - name: Notify Slack on Success
-        if: needs.create-release.result == 'success'
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: "🎉 Release build completed!",
-              attachments: [{
-                color: 'good',
-                fields: [{
-                  title: 'Version',
-                  value: '${{ github.ref_name }}',
-                  short: true
-                }, {
-                  title: 'Status',
-                  value: 'Success ✅',
-                  short: true
-                }]
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: Notify Slack on Failure
-        if: needs.create-release.result == 'failure'
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: "❌ Release build failed!",
-              attachments: [{
-                color: 'danger',
-                fields: [{
-                  title: 'Version',
-                  value: '${{ github.ref_name }}',
-                  short: true
-                }, {
-                  title: 'Status',
-                  value: 'Failed ❌',
-                  short: true
-                }]
-              }]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  # Optional: Slack notification (requires SLACK_WEBHOOK_URL secret)
+  # Uncomment and configure if you want Slack notifications
+  # notify:
+  #   name: Notify Release
+  #   runs-on: ubuntu-latest
+  #   needs: create-release
+  #   if: always()
+  #   steps:
+  #     - name: Notify Slack on Success
+  #       if: needs.create-release.result == 'success'
+  #       uses: 8398a7/action-slack@v3
+  #       with:
+  #         status: custom
+  #         custom_payload: |
+  #           {
+  #             text: "🎉 Release build completed!",
+  #             attachments: [{
+  #               color: 'good',
+  #               fields: [{
+  #                 title: 'Version',
+  #                 value: '${{ github.ref_name }}',
+  #                 short: true
+  #               }, {
+  #                 title: 'Status',
+  #                 value: 'Success ✅',
+  #                 short: true
+  #               }]
+  #             }]
+  #           }
+  #       env:
+  #         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
