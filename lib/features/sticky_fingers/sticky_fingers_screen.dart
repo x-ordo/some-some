@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/haptics/haptics.dart';
 import '../../core/settings/settings_service.dart';
@@ -44,10 +45,23 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
   // Failure reason tracking
   String? _failureReason;
 
+  // Milestone tracking (50%, 80%)
+  bool _reached50 = false;
+  bool _reached80 = false;
+  final ValueNotifier<String?> _milestoneText = ValueNotifier<String?>(null);
+
+  // Best record
+  double? _bestTime;
+  bool _isNewRecord = false;
+  static const String _bestTimeKey = 'best_time';
+
   // Sound & Celebration
   final SoundService _sound = SoundService();
   final SettingsService _settings = SettingsService();
   late final ConfettiController _confettiController;
+
+  // Success animation
+  final ValueNotifier<bool> _showSuccessAnimation = ValueNotifier<bool>(false);
 
   static const String _storeText = '@somesome.app';
 
@@ -71,6 +85,20 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _ticker = createTicker(_gameLoop);
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
     _sound.init();
+    _loadBestTime();
+  }
+
+  Future<void> _loadBestTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getDouble(_bestTimeKey);
+    if (saved != null && mounted) {
+      setState(() => _bestTime = saved);
+    }
+  }
+
+  Future<void> _saveBestTime(double time) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble(_bestTimeKey, time);
   }
 
   @override
@@ -80,6 +108,8 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _progress.dispose();
     _phase.dispose();
     _isGracePeriod.dispose();
+    _milestoneText.dispose();
+    _showSuccessAnimation.dispose();
     _confettiController.dispose();
     _sound.stopHeartbeat();
     super.dispose();
@@ -92,6 +122,11 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _phase.value = StickyGamePhase.playing;
     _failureReason = null;
     _isGracePeriod.value = false;
+    _reached50 = false;
+    _reached80 = false;
+    _isNewRecord = false;
+    _milestoneText.value = null;
+    _showSuccessAnimation.value = false;
     _ticker.start();
     if (_settings.hapticEnabled) Haptics.heavy();
     if (_settings.soundEnabled) {
@@ -110,6 +145,17 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
       _failureReason = reason;
     }
     if (success) {
+      // Check for new record
+      final currentTime = _durationSec;
+      if (_bestTime == null || currentTime > _bestTime!) {
+        _isNewRecord = true;
+        _bestTime = currentTime;
+        _saveBestTime(currentTime);
+      }
+
+      // Trigger success animation
+      _showSuccessAnimation.value = true;
+
       if (_settings.hapticEnabled) Haptics.vibrate();
       if (_settings.soundEnabled) _sound.playSuccess();
       _confettiController.play();
@@ -134,7 +180,23 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
     _phase.value = StickyGamePhase.idle;
     _failureReason = null;
     _isGracePeriod.value = false;
+    _reached50 = false;
+    _reached80 = false;
+    _isNewRecord = false;
+    _milestoneText.value = null;
+    _showSuccessAnimation.value = false;
     setState(() {});
+  }
+
+  void _showMilestone(String text) {
+    _milestoneText.value = text;
+    if (_settings.hapticEnabled) Haptics.medium();
+    // Auto-hide after 800ms
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (_milestoneText.value == text) {
+        _milestoneText.value = null;
+      }
+    });
   }
 
   bool _isHoldingBoth() => _pointers.length >= 2;
@@ -172,9 +234,21 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
       final ok = (okA && okB) || (okSwapA && okSwapB);
 
       if (ok) {
-        final next = (_progress.value + dt / _durationSec).clamp(0.0, 1.0);
+        final prev = _progress.value;
+        final next = (prev + dt / _durationSec).clamp(0.0, 1.0);
         _progress.value = next;
         _sound.setHeartbeatSpeed(next); // 진행률에 따라 심장박동 속도 증가
+
+        // Milestone feedback
+        if (!_reached50 && next >= 0.5) {
+          _reached50 = true;
+          _showMilestone('반이다! 💪');
+        }
+        if (!_reached80 && next >= 0.8) {
+          _reached80 = true;
+          _showMilestone('거의 다 왔어! 🔥');
+        }
+
         if (next >= 1.0) {
           _stop(success: true);
         }
@@ -343,6 +417,104 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
                             child: Text(_phase.value == StickyGamePhase.playing ? '그만하기' : '나가기'),
                           ),
                         ),
+                        // Milestone popup
+                        ValueListenableBuilder<String?>(
+                          valueListenable: _milestoneText,
+                          builder: (context, text, _) {
+                            if (text == null) return const SizedBox.shrink();
+                            return Positioned.fill(
+                              child: Center(
+                                child: TweenAnimationBuilder<double>(
+                                  tween: Tween(begin: 0.0, end: 1.0),
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.elasticOut,
+                                  builder: (context, value, child) {
+                                    return Transform.scale(
+                                      scale: value,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 24,
+                                      vertical: 12,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: cs.primaryContainer,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: cs.primary.withOpacity(0.3),
+                                          blurRadius: 20,
+                                          spreadRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      text,
+                                      style: titleMedium(cs).copyWith(
+                                        color: cs.onPrimaryContainer,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        // Success animation (character merge)
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _showSuccessAnimation,
+                          builder: (context, show, _) {
+                            if (!show) return const SizedBox.shrink();
+                            return Positioned.fill(
+                              child: TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                duration: const Duration(milliseconds: 800),
+                                curve: Curves.elasticOut,
+                                builder: (context, value, child) {
+                                  return Center(
+                                    child: Transform.scale(
+                                      scale: 0.5 + (value * 0.5),
+                                      child: Opacity(
+                                        opacity: value,
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              '🐻❤️🐰',
+                                              style: TextStyle(fontSize: 60 + (value * 20)),
+                                            ),
+                                            const SizedBox(height: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(
+                                                horizontal: 20,
+                                                vertical: 8,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                                  colors: [cs.primary, cs.secondary],
+                                                ),
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              child: Text(
+                                                '완벽한 호흡!',
+                                                style: titleSmall(cs).copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ],
                     );
                   },
@@ -379,6 +551,46 @@ class _StickyFingersScreenState extends State<StickyFingersScreen>
                           style: titleBig(cs),
                         ),
                         const SizedBox(height: 6),
+                        // New record badge
+                        if (success && _isNewRecord)
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Colors.amber, Colors.orange],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text('🏆', style: TextStyle(fontSize: 16)),
+                                const SizedBox(width: 4),
+                                Text(
+                                  '신기록!',
+                                  style: bodySmall(cs).copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        // Record display
+                        if (success && _bestTime != null)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              '기록: ${_durationSec.toInt()}초 | 최고: ${_bestTime!.toInt()}초',
+                              style: bodySmall(cs).copyWith(
+                                color: cs.onSurfaceVariant,
+                              ),
+                            ),
+                          ),
                         if (!success && _failureReason != null)
                           Text(
                             _failureReason!,
