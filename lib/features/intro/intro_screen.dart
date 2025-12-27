@@ -11,6 +11,7 @@ import '../../design_system/components/animated_background.dart';
 import '../../design_system/components/glow_card.dart';
 import '../settings/settings_screen.dart';
 import '../sticky_fingers/sticky_fingers_screen.dart';
+import '../soul_sync/soul_sync_screen.dart';
 import '../tutorial/tutorial_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -215,27 +216,47 @@ class _IntroScreenState extends State<IntroScreen>
 
                 const Spacer(),
 
-                // Glass Button with glow
+                // Game Mode Buttons
                 Center(
-                  child: GlassButton(
-                    text: '쫀드기 챌린지 시작하기',
-                    glowColor: cs.primary,
-                    icon: Icons.play_arrow_rounded,
-                    onTap: () {
-                      HapticFeedback.mediumImpact();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const StickyFingersScreen()),
-                      );
-                    },
+                  child: Column(
+                    children: [
+                      // Sticky Fingers Button
+                      GlassButton(
+                        text: '쫀드기 챌린지',
+                        glowColor: cs.primary,
+                        icon: Icons.touch_app_rounded,
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const StickyFingersScreen()),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      // Soul Sync Button
+                      GlassButton(
+                        text: '이심전심 텔레파시',
+                        glowColor: cs.secondary,
+                        icon: Icons.favorite_rounded,
+                        onTap: () {
+                          HapticFeedback.mediumImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SoulSyncScreen()),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 )
                     .animate()
                     .fadeIn(duration: 800.ms, delay: 800.ms)
                     .slideY(begin: 0.3, curve: Curves.easeOut),
 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
 
                 // Tagline with shimmer
                 Center(
