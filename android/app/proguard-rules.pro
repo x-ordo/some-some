@@ -32,6 +32,10 @@
 # Keep shared_preferences plugin
 -keep class io.flutter.plugins.sharedpreferences.** { *; }
 
+# Keep in_app_purchase plugin
+-keep class io.flutter.plugins.inapppurchase.** { *; }
+-keep class com.android.vending.billing.** { *; }
+
 # General Android rules
 -keepattributes Signature
 -keepattributes *Annotation*

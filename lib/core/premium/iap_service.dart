@@ -240,6 +240,7 @@ class IAPService extends ChangeNotifier {
   }
 
   /// 리소스 정리
+  @override
   void dispose() {
     _subscription?.cancel();
     super.dispose();

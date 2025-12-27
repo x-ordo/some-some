@@ -1,0 +1,85 @@
+{
+  "identifier" : "96D4B6E2-0C3E-4E1C-9F5A-2D4E8F1C3A5B",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "3900",
+      "familyShareable" : false,
+      "internalID" : "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+      "localizations" : [
+        {
+          "description" : "모든 프리미엄 콘텐츠를 영구적으로 해금합니다.",
+          "displayName" : "프리미엄 업그레이드",
+          "locale" : "ko"
+        },
+        {
+          "description" : "Unlock all premium content permanently.",
+          "displayName" : "Premium Upgrade",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.prometheusp.somesome.premium",
+      "referenceName" : "Premium Upgrade",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1900",
+      "familyShareable" : false,
+      "internalID" : "B2C3D4E5-F6G7-8901-BCDE-F23456789012",
+      "localizations" : [
+        {
+          "description" : "더 대담하고 로맨틱한 질문 50개를 해금합니다.",
+          "displayName" : "스파이시 질문 팩",
+          "locale" : "ko"
+        },
+        {
+          "description" : "Unlock 50 bold and romantic questions.",
+          "displayName" : "Spicy Question Pack",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.prometheusp.somesome.spicy_pack",
+      "referenceName" : "Spicy Pack",
+      "type" : "NonConsumable"
+    },
+    {
+      "displayPrice" : "1900",
+      "familyShareable" : false,
+      "internalID" : "C3D4E5F6-G7H8-9012-CDEF-345678901234",
+      "localizations" : [
+        {
+          "description" : "커플 전용 특별 질문 50개를 해금합니다.",
+          "displayName" : "커플 질문 팩",
+          "locale" : "ko"
+        },
+        {
+          "description" : "Unlock 50 special couple questions.",
+          "displayName" : "Couple Question Pack",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.prometheusp.somesome.couple_pack",
+      "referenceName" : "Couple Pack",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1234567890",
+    "_developerTeamID" : "XXXXXXXXXX",
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ko",
+    "_storefront" : "KOR",
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

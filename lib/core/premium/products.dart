@@ -1,8 +1,6 @@
-/// 인앱 구매 상품 정의
+/// 프리미엄 상품 ID
 ///
 /// App Store Connect / Google Play Console에서 동일한 ID로 상품 등록 필요
-
-/// 프리미엄 상품 ID
 class ProductIds {
   ProductIds._();
 
