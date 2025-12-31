@@ -317,7 +317,7 @@ Add to `.vscode/keybindings.json`:
 
 ```bash
 # Clone repository
-git clone https://github.com/Prometheus-P/some-some.git
+git clone https://github.com/x-ordo/some-some.git
 cd some-some
 
 # Check branch

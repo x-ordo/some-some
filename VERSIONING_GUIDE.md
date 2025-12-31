@@ -630,10 +630,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 햅틱 피드백 시스템
 - 성공/실패 결과 화면
 
-[Unreleased]: https://github.com/Prometheus-P/some-some/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/Prometheus-P/some-some/compare/v1.0.1...v1.1.0
-[1.0.1]: https://github.com/Prometheus-P/some-some/compare/v1.0.0...v1.0.1
-[1.0.0]: https://github.com/Prometheus-P/some-some/releases/tag/v1.0.0
+[Unreleased]: https://github.com/x-ordo/some-some/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/x-ordo/some-some/compare/v1.0.1...v1.1.0
+[1.0.1]: https://github.com/x-ordo/some-some/compare/v1.0.0...v1.0.1
+[1.0.0]: https://github.com/x-ordo/some-some/releases/tag/v1.0.0
 ```
 
 ### 6.2 Changelog Categories

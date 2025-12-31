@@ -22,7 +22,7 @@
 보안 취약점은 **공개 이슈로 리포트하지 마세요**. 대신 다음 방법을 사용해주세요:
 
 1. **GitHub Security Advisories** (권장)
-   - [새로운 보안 권고 생성](https://github.com/Prometheus-P/some-some/security/advisories/new)
+   - [새로운 보안 권고 생성](https://github.com/x-ordo/some-some/security/advisories/new)
    - GitHub의 비공개 보안 리포팅 기능 사용
    - 취약점이 수정될 때까지 비공개로 유지됩니다
 
@@ -291,8 +291,8 @@ Phase 2 이후 정식 버그 바운티 프로그램을 시작할 예정입니다
 ## 📧 연락처
 
 - **보안팀 이메일**: parkdavid31@gmail.com
-- **GitHub Security**: [Create Security Advisory](https://github.com/Prometheus-P/some-some/security/advisories/new)
-- **일반 문의**: [GitHub Discussions](https://github.com/Prometheus-P/some-some/discussions)
+- **GitHub Security**: [Create Security Advisory](https://github.com/x-ordo/some-some/security/advisories/new)
+- **일반 문의**: [GitHub Discussions](https://github.com/x-ordo/some-some/discussions)
 
 ## ⚖️ 법적 고지
 
@@ -305,6 +305,6 @@ Phase 2 이후 정식 버그 바운티 프로그램을 시작할 예정입니다
 
 **마지막 업데이트**: 2025-12-01
 **버전**: 1.0.0
-**담당자**: @Prometheus-P
+**담당자**: @x-ordo
 
 보안은 모두의 책임입니다. 안전한 썸썸 앱을 만드는 데 도움을 주셔서 감사합니다! 🙏

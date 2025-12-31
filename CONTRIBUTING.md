@@ -129,14 +129,14 @@ graph LR
 
 ```bash
 # 1. GitHub에서 저장소 포크
-# https://github.com/Prometheus-P/some-some/fork
+# https://github.com/x-ordo/some-some/fork
 
 # 2. 포크한 저장소 클론
 git clone https://github.com/[YOUR_USERNAME]/some-some.git
 cd some-some
 
 # 3. Upstream 원격 저장소 추가
-git remote add upstream https://github.com/Prometheus-P/some-some.git
+git remote add upstream https://github.com/x-ordo/some-some.git
 
 # 4. 의존성 설치
 flutter pub get
@@ -186,7 +186,7 @@ dart format --set-exit-if-changed .
 **Good First Issues** 👶
 
 초보자를 위한 이슈는 `good first issue` 라벨이 붙어 있습니다:
-- https://github.com/Prometheus-P/some-some/labels/good%20first%20issue
+- https://github.com/x-ordo/some-some/labels/good%20first%20issue
 
 **이슈 확인**:
 1. 이슈가 이미 할당되었는지 확인
@@ -616,7 +616,7 @@ git commit -S -m "feat(game): add new feature"
 git push origin feature/soul-sync-mode
 
 # 2. GitHub에서 PR 생성
-# https://github.com/Prometheus-P/some-some/compare
+# https://github.com/x-ordo/some-some/compare
 
 # 3. PR 템플릿 작성 (자동으로 로드됨)
 ```

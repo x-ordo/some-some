@@ -55,7 +55,7 @@ Secondary: Entertainment
 4+
 
 ## Copyright
-© 2025 Prometheus-P
+© 2025 x-ordo
 
 ## Support URL
 https://prometheusp.com/somesome/support

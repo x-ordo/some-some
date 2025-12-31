@@ -970,7 +970,7 @@ class _GlassInfoCard extends StatelessWidget {
               _InfoRow(
                 icon: Icons.person_rounded,
                 label: '만든 사람',
-                value: 'Prometheus-P',
+                value: 'x-ordo',
                 color: cs.secondary,
               ),
               const SizedBox(height: 16),
