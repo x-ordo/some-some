@@ -213,11 +213,18 @@ Automatically runs `dart format` before commits. Install with:
 | Constants | camelCase | `kSpringCurve` |
 
 ### Git Commits
-Use Conventional Commits format:
+Use Conventional Commits format (no AI attribution):
 ```
 feat(soul-sync): add compatibility percentage calculation
 fix(haptics): correct vibration timing on iOS
+chore(deps): update flutter_animate to 4.6.0
 ```
+
+### Linting Rules (analysis_options.yaml)
+- `prefer_const_constructors`: true
+- `prefer_single_quotes`: true
+- `avoid_print`: true
+- `sort_pub_dependencies`: true
 
 ---
 
@@ -272,3 +279,18 @@ flutter logs                       # Show device logs
 ```bash
 flutter clean && flutter pub get && flutter run
 ```
+
+### Run single test file
+```bash
+flutter test test/widget_test.dart
+```
+
+---
+
+## Related Issues
+
+Active development tracked in GitHub Issues:
+- #14: Dynamic target position
+- #17: Test coverage expansion
+- #18: Riverpod migration
+- #19: Firebase integration
